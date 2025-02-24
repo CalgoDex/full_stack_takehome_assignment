@@ -123,8 +123,16 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
                         className={getSeverityColor(
                           dataRow?.errors?.zipcode?.severity
                         )}
+                        data-tip
+                        data-for={`zipcode-error-${dataRow.id}`}
                       >
                         {dataRow?.errors?.zipcode?.severity}
+                        <ReactTooltip
+                          id={`zipcode-error-${dataRow.id}`}
+                          place="top"
+                        >
+                          {dataRow?.errors?.zipcode?.message}
+                        </ReactTooltip>
                       </td>
                       <td
                         className={getSeverityColor(
@@ -137,8 +145,16 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
                         className={getSeverityColor(
                           dataRow?.errors?.street?.severity
                         )}
+                        data-tip
+                        data-for={`street-error-${dataRow.id}`}
                       >
                         {dataRow?.errors?.street?.severity}
+                        <ReactTooltip
+                          id={`street-error-${dataRow.id}`}
+                          place="top"
+                        >
+                          {dataRow?.errors?.street?.message}
+                        </ReactTooltip>
                       </td>
                     </tr>
                   );
