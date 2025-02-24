@@ -52,31 +52,31 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
   }
 
   return (
-    <div style={{ margin: "20px" }}>
+    <div className="container" style={{ margin: "20px" }}>
       <h1 className="text-green bg-gray-100 font-mono">Data Review</h1>
-      <div>
+      <div className="col">
         {mockData && (
-          <table key={mockData[0].id} className="bg-gray-100 p-2 m-2 w-full">
+          <table key={mockData[0].id} className="table table-dark">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Street</th>
-                <th>City</th>
-                <th>Zipcode</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th>Zipcode Error Message</th>
-                <th>Zipcode Error Severity</th>
-                <th>Street Error Message</th>
-                <th>Street Error Severity</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Street</th>
+                <th scope="col">City</th>
+                <th scope="col">Zipcode</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Status</th>
+                <th scope="col">Zipcode Error Message</th>
+                <th scope="col">Zipcode Error Severity</th>
+                <th scope="col">Street Error Message</th>
+                <th scope="col">Street Error Severity</th>
               </tr>
             </thead>
             <tbody>
               {mockData.map((dataRow: IDataType) => {
                 return (
                   <tr>
-                    <td>{dataRow?.name}</td>
+                    <th scope="row">{dataRow?.name}</th>
                     <td>{dataRow?.email}</td>
                     <td>{dataRow?.street}</td>
                     <td>{dataRow?.city}</td>
