@@ -5,7 +5,7 @@ import DataReviewTable from "../components/DataReviewTable";
 
 export default function Home() {
   return (
-    <div>
+    <div className="data-visualizer-ctn">
       <DataReviewTable />
     </div>
   );
