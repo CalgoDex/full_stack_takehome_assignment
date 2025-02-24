@@ -35,6 +35,11 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
   const [mockDataJson, setMockDataJson] = useState<{
     records: IDataType[];
   } | null>(null);
+  const [isModalActive, setIsModalActive] = useState<boolean>(false);
+  const [selectedRow, setSelectedRow] = useState<number | null>(null);
+  const [selectedRowData, setSelectedRowData] = useState<IDataType | null>(
+    null
+  );
 
   const fetchData = async () => {
     // fetch the data from /api/data using GET method
@@ -132,6 +137,64 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
     }
   };
 
+  const handleRowClick = (index: number, dataRow: IDataType) => {
+    setSelectedRow(index);
+    setSelectedRowData(dataRow);
+
+    if (!isModalActive) {
+      setIsModalActive(true);
+    }
+  };
+
+  const handleClose = () => {
+    setIsModalActive(false);
+    setSelectedRow(null);
+    setSelectedRowData(null);
+  };
+
+  const ErrorModal: React.FC<{
+    dataRow: IDataType | null;
+  }> = ({ dataRow }) => {
+    if (!dataRow) return null;
+
+    return (
+      <div className="modal-overlay" onClick={handleClose}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <h2>Error Details</h2>
+          <p>
+            <strong>Zipcode Error:</strong> {dataRow?.errors?.zipcode?.message}
+          </p>
+          <p>
+            <strong>Zipcode Severity:</strong>{" "}
+            {dataRow?.errors?.zipcode?.severity}
+          </p>
+          <p>
+            <strong>Email Error:</strong> {dataRow?.errors?.email?.message}
+          </p>
+          <p>
+            <strong>Email Severity:</strong> {dataRow?.errors?.email?.severity}
+          </p>
+          <p>
+            <strong>Street Error:</strong> {dataRow?.errors?.street?.message}
+          </p>
+          <p>
+            <strong>Street Severity:</strong>{" "}
+            {dataRow?.errors?.street?.severity}
+          </p>
+          <button onClick={handleClose} className="btn btn-primary">
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const onModalClick = () => {
+    if (selectedRowData) {
+      return ErrorModal({ dataRow: selectedRowData });
+    }
+  };
+
   if (!mockData) {
     return <div>Loading Data...</div>;
   }
@@ -162,9 +225,13 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
                 </tr>
               </thead>
               <tbody>
-                {mockData.map((dataRow: IDataType) => {
+                {mockData.map((dataRow: IDataType, index) => {
                   return (
-                    <tr key={dataRow.id}>
+                    <tr
+                      key={index}
+                      onClick={() => handleRowClick(index, dataRow)}
+                      className={selectedRow === index ? "selected" : ""}
+                    >
                       <th
                         className={getSeverityColor(dataRow?.id.toString())}
                         scope="row"
@@ -259,8 +326,12 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
           type="button"
           className="btn btn-secondary"
           style={{ marginRight: "10px" }}
+          disabled={!isModalActive}
+          onClick={onModalClick}
         >
-          Generate Summary
+          {(selectedRowData && (
+            <div>View ID {selectedRowData.id} Error Summary</div>
+          )) ?? <div>View Error Summary</div>}
         </button>
         <button
           onClick={handleExportExcel}
