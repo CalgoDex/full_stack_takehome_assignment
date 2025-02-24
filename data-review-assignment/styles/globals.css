@@ -35,4 +35,10 @@ body {
   color: green
 }
 
+.btnRow{
+  display: flex;
+  flex-direction: row;  
+  margin-top: 20px;
+}
+
 

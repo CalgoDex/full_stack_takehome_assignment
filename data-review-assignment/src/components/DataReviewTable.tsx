@@ -20,6 +20,10 @@ interface IDataType {
       message: string;
       severity: string;
     };
+    email: {
+      message: string;
+      severity: string;
+    };
   };
 }
 interface IDataReviewTableProps {
@@ -28,6 +32,9 @@ interface IDataReviewTableProps {
 
 const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
   const [mockData, setMockData] = useState<IDataType[] | null>(null);
+  const [mockDataJson, setMockDataJson] = useState<{
+    records: IDataType[];
+  } | null>(null);
 
   const fetchData = async () => {
     // fetch the data from /api/data using GET method
@@ -35,6 +42,7 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
       method: "GET",
     });
     const data = await response.json();
+    setMockDataJson(data);
     console.log(data);
     return data.records;
   };
@@ -42,7 +50,6 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
   useEffect(() => {
     const fetchDataAsync = async () => {
       setMockData(await fetchData());
-      console.log("mockData is array? : ", Array.isArray(mockData));
     };
     fetchDataAsync();
   }, [setMockData]);
@@ -55,6 +62,73 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
         return "text-warning";
       default:
         return "text-success";
+    }
+  };
+
+  const convertJsonToCsv = (jsonData: { records: IDataType[] }) => {
+    if (!jsonData || jsonData.records.length === 0) {
+      return "";
+    }
+
+    const headers = [
+      "ID",
+      "Name",
+      "Email",
+      "Street",
+      "City",
+      "Zipcode",
+      "Phone",
+      "Status",
+      "Zipcode Error Message",
+      "Zipcode Error Severity",
+      "Email Error Message",
+      "Email Error Severity",
+      "Street Error Message",
+      "Street Error Severity",
+    ];
+
+    const csvRows = [];
+
+    csvRows.push(headers.join(","));
+
+    for (let row = 0; row < jsonData.records.length; row++) {
+      const values = [
+        jsonData.records[row].id.toString(),
+        jsonData.records[row].name ?? "",
+        jsonData.records[row].email ?? "",
+        jsonData.records[row].street ?? "",
+        jsonData.records[row].city ?? "",
+        jsonData.records[row].zipcode ?? "",
+        jsonData.records[row].phone ?? "",
+        jsonData.records[row].status ?? "",
+        jsonData.records[row].errors?.zipcode?.message ?? "",
+        jsonData.records[row].errors?.zipcode?.severity ?? "",
+        jsonData.records[row].errors?.email?.message ?? "",
+        jsonData.records[row].errors?.email?.severity ?? "",
+        jsonData.records[row].errors?.street?.message ?? "",
+        jsonData.records[row].errors?.street?.severity ?? "",
+      ];
+      csvRows.push(values.join(","));
+    }
+    return csvRows.join("\n");
+  };
+
+  const downloadCsv = (csvData: string, filename = "data.csv") => {
+    const blob = new Blob([csvData], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportExcel = () => {
+    if (mockDataJson) {
+      const csvData = convertJsonToCsv(mockDataJson);
+      downloadCsv(csvData);
     }
   };
 
@@ -71,6 +145,7 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
             <table key={mockData[0].id} className="table table-dark">
               <thead className="sticky-top top-0">
                 <tr>
+                  <th scope="col">ID</th>
                   <th scope="col">Name</th>
                   <th scope="col">Email</th>
                   <th scope="col">Street</th>
@@ -80,6 +155,8 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
                   <th scope="col">Status</th>
                   <th scope="col">Zipcode Error Message</th>
                   <th scope="col">Zipcode Error Severity</th>
+                  <th scope="col">Email Error Message</th>
+                  <th scope="col">Email Error Severity</th>
                   <th scope="col">Street Error Message</th>
                   <th scope="col">Street Error Severity</th>
                 </tr>
@@ -89,11 +166,17 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
                   return (
                     <tr key={dataRow.id}>
                       <th
+                        className={getSeverityColor(dataRow?.id.toString())}
+                        scope="row"
+                      >
+                        {dataRow?.id}
+                      </th>
+                      <td
                         className={getSeverityColor(dataRow?.name)}
                         scope="row"
                       >
                         {dataRow?.name}
-                      </th>
+                      </td>
                       <td className={getSeverityColor(dataRow?.email)}>
                         {dataRow?.email}
                       </td>
@@ -131,6 +214,23 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
                       </td>
                       <td
                         className={getSeverityColor(
+                          dataRow?.errors?.email?.message
+                        )}
+                      >
+                        {dataRow?.errors?.email?.message}
+                      </td>
+                      <td
+                        className={getSeverityColor(
+                          dataRow?.errors?.email?.severity
+                        )}
+                        data-tooltip-id={`email-error-${dataRow.id}`}
+                        data-tooltip-content={dataRow?.errors?.email?.message}
+                      >
+                        {dataRow?.errors?.email?.severity}
+                        <ReactTooltip id={`email-error-${dataRow.id}`} />
+                      </td>
+                      <td
+                        className={getSeverityColor(
                           dataRow?.errors?.street?.message
                         )}
                       >
@@ -153,6 +253,22 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
             </table>
           </div>
         )}
+      </div>
+      <div className="btnRow">
+        <button
+          type="button"
+          className="btn btn-secondary"
+          style={{ marginRight: "10px" }}
+        >
+          Generate Summary
+        </button>
+        <button
+          onClick={handleExportExcel}
+          type="button"
+          className="btn btn-success"
+        >
+          Export Excel
+        </button>
       </div>
     </div>
   );
