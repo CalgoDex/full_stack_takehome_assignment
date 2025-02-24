@@ -123,16 +123,11 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
                         className={getSeverityColor(
                           dataRow?.errors?.zipcode?.severity
                         )}
-                        data-tip
-                        data-for={`zipcode-error-${dataRow.id}`}
+                        data-tooltip-id={`zipcode-error-${dataRow.id}`}
+                        data-tooltip-content={dataRow?.errors?.zipcode?.message}
                       >
                         {dataRow?.errors?.zipcode?.severity}
-                        <ReactTooltip
-                          id={`zipcode-error-${dataRow.id}`}
-                          place="top"
-                        >
-                          {dataRow?.errors?.zipcode?.message}
-                        </ReactTooltip>
+                        <ReactTooltip id={`zipcode-error-${dataRow.id}`} />
                       </td>
                       <td
                         className={getSeverityColor(
@@ -145,16 +140,11 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
                         className={getSeverityColor(
                           dataRow?.errors?.street?.severity
                         )}
-                        data-tip
-                        data-for={`street-error-${dataRow.id}`}
+                        data-tooltip-id={`street-error-${dataRow.id}`}
+                        data-tooltip-content={dataRow?.errors?.street?.message}
                       >
                         {dataRow?.errors?.street?.severity}
-                        <ReactTooltip
-                          id={`street-error-${dataRow.id}`}
-                          place="top"
-                        >
-                          {dataRow?.errors?.street?.message}
-                        </ReactTooltip>
+                        <ReactTooltip id={`street-error-${dataRow.id}`} />
                       </td>
                     </tr>
                   );
