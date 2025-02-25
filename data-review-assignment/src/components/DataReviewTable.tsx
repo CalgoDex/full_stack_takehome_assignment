@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { IDataType, IDataReviewTableProps } from "../types/type-definitions";
 import { getSeverityColor, convertJsonToCsv } from "../helpers";
-import DigitalRain from "./DigitalRain";
 import ErrorModal from "./ErrorModal";
 
 const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
