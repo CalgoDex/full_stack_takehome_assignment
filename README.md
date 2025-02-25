@@ -14,7 +14,5 @@
 #### To Run
 **Locally**: install node modules by running `yarn`. Then run `yarn dev` to start the server. To view page go to `http://localhost:3000/`.
 
-#### Pending Tasks
-
-- Did not get to finish the modal implementation.
-- Would like to separate functionality into smaller components.
+- click on a row to see pop-up modal
+- click on the export button to export the data to csv

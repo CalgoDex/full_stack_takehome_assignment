@@ -51,4 +51,22 @@ body {
   }
 }
 
+.modal-overlay{
+  position: absolute;
+  width: 30%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: whitesmoke;
+  border-radius: 10px;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
 

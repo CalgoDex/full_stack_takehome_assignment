@@ -24,6 +24,10 @@ interface IDataType {
       message: string;
       severity: string;
     };
+    phone: {
+      message: string;
+      severity: string;
+    };
   };
 }
 interface IDataReviewTableProps {
@@ -90,6 +94,8 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
       "Email Error Severity",
       "Street Error Message",
       "Street Error Severity",
+      "Phone Error Message",
+      "Phone Error Severity",
     ];
 
     const csvRows = [];
@@ -112,6 +118,8 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
         jsonData.records[row].errors?.email?.severity ?? "",
         jsonData.records[row].errors?.street?.message ?? "",
         jsonData.records[row].errors?.street?.severity ?? "",
+        jsonData.records[row].errors?.phone?.message ?? "",
+        jsonData.records[row].errors?.phone?.severity ?? "",
       ];
       csvRows.push(values.join(","));
     }
@@ -155,44 +163,77 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
   const ErrorModal: React.FC<{
     dataRow: IDataType | null;
   }> = ({ dataRow }) => {
-    if (!dataRow) return null;
+    const modalRef = React.useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      if (modalRef.current) {
+        modalRef.current.focus();
+      }
+    }, []);
+
+    if (!dataRow || !dataRow.errors) return null;
 
     return (
-      <div className="modal-overlay" onClick={handleClose}>
-        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-          <h2>Error Details</h2>
-          <p>
-            <strong>Zipcode Error:</strong> {dataRow?.errors?.zipcode?.message}
-          </p>
-          <p>
-            <strong>Zipcode Severity:</strong>{" "}
-            {dataRow?.errors?.zipcode?.severity}
-          </p>
-          <p>
-            <strong>Email Error:</strong> {dataRow?.errors?.email?.message}
-          </p>
-          <p>
-            <strong>Email Severity:</strong> {dataRow?.errors?.email?.severity}
-          </p>
-          <p>
-            <strong>Street Error:</strong> {dataRow?.errors?.street?.message}
-          </p>
-          <p>
-            <strong>Street Severity:</strong>{" "}
-            {dataRow?.errors?.street?.severity}
-          </p>
-          <button onClick={handleClose} className="btn btn-primary">
+      <div className="modal-overlay" onClick={handleClose} ref={modalRef}>
+        <div
+          className="modal-content"
+          onClick={(e) => e.stopPropagation()}
+          tabIndex={-1}
+        >
+          <h2>Error summary for ID: {dataRow?.id}</h2>
+          {dataRow?.errors?.zipcode?.message && (
+            <p>
+              <strong>Zipcode Error:</strong>{" "}
+              {dataRow?.errors?.zipcode?.message}
+            </p>
+          )}
+
+          {dataRow?.errors?.zipcode?.severity && (
+            <p>
+              <strong>Zipcode Severity:</strong>{" "}
+              {dataRow?.errors?.zipcode?.severity}
+            </p>
+          )}
+          {dataRow?.errors?.email?.message && (
+            <p>
+              <strong>Email Error:</strong> {dataRow?.errors?.email?.message}
+            </p>
+          )}
+
+          {dataRow?.errors?.email?.severity && (
+            <p>
+              <strong>Email Severity:</strong>{" "}
+              {dataRow?.errors?.email?.severity}
+            </p>
+          )}
+          {dataRow?.errors?.street?.message && (
+            <p>
+              <strong>Street Error:</strong> {dataRow?.errors?.street?.message}
+            </p>
+          )}
+          {dataRow?.errors?.street?.severity && (
+            <p>
+              <strong>Street Severity:</strong>{" "}
+              {dataRow?.errors?.street?.severity}
+            </p>
+          )}
+          {dataRow?.errors?.phone?.message && (
+            <p>
+              <strong>Phone Error:</strong> {dataRow?.errors?.phone?.message}
+            </p>
+          )}
+          {dataRow?.errors?.phone?.severity && (
+            <p>
+              <strong>Phone Severity:</strong>{" "}
+              {dataRow?.errors?.phone?.severity}
+            </p>
+          )}
+          <button onClick={handleClose} className="btn btn-danger">
             Close
           </button>
         </div>
       </div>
     );
-  };
-
-  const onModalClick = () => {
-    if (selectedRowData) {
-      return ErrorModal({ dataRow: selectedRowData });
-    }
   };
 
   if (!mockData) {
@@ -216,12 +257,70 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
                   <th scope="col">Zipcode</th>
                   <th scope="col">Phone</th>
                   <th scope="col">Status</th>
-                  <th scope="col">Zipcode Error Message</th>
-                  <th scope="col">Zipcode Error Severity</th>
-                  <th scope="col">Email Error Message</th>
-                  <th scope="col">Email Error Severity</th>
-                  <th scope="col">Street Error Message</th>
-                  <th scope="col">Street Error Severity</th>
+                  <th
+                    scope="col"
+                    data-tooltip-id={`zipcode-EM-title`}
+                    data-tooltip-content={`Zipcode Error Message`}
+                  >
+                    {`ZEM`}
+                    <ReactTooltip id={`zipcode-EM-title`} />
+                  </th>
+                  <th
+                    scope="col"
+                    data-tooltip-id={`zipcode-ES-title`}
+                    data-tooltip-content={`Zipcode Error Severity`}
+                  >
+                    ZES
+                    <ReactTooltip id={`zipcode-ES-title`} />
+                  </th>
+                  <th
+                    scope="col"
+                    data-tooltip-id={`email-EM-title`}
+                    data-tooltip-content={`Email Error Message`}
+                  >
+                    EEM
+                    <ReactTooltip id={`email-EM-title`} />
+                  </th>
+                  <th
+                    scope="col"
+                    data-tooltip-id={`email-ES-title`}
+                    data-tooltip-content={`Email Error Severity`}
+                  >
+                    EES
+                    <ReactTooltip id={`email-ES-title`} />
+                  </th>
+                  <th
+                    scope="col"
+                    data-tooltip-id={`street-EM-title`}
+                    data-tooltip-content={`Street Error Message`}
+                  >
+                    SEM
+                    <ReactTooltip id={`street-EM-title`} />
+                  </th>
+                  <th
+                    scope="col"
+                    data-tooltip-id={`street-ES-title`}
+                    data-tooltip-content={`Street Error Severity`}
+                  >
+                    SES
+                    <ReactTooltip id={`street-ES-title`} />
+                  </th>
+                  <th
+                    scope="col"
+                    data-tooltip-id={`phone-EM-title`}
+                    data-tooltip-content={`Phone Error Message`}
+                  >
+                    PEM
+                    <ReactTooltip id={`phone-EM-title`} />
+                  </th>
+                  <th
+                    scope="col"
+                    data-tooltip-id={`phone-ES-title`}
+                    data-tooltip-content={`Phone Error Severity`}
+                  >
+                    PES
+                    <ReactTooltip id={`phone-ES-title`} />
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -313,6 +412,23 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
                         {dataRow?.errors?.street?.severity}
                         <ReactTooltip id={`street-error-${dataRow.id}`} />
                       </td>
+                      <td
+                        className={getSeverityColor(
+                          dataRow?.errors?.phone?.message
+                        )}
+                      >
+                        {dataRow?.errors?.phone?.message}
+                      </td>
+                      <td
+                        className={getSeverityColor(
+                          dataRow?.errors?.phone?.severity
+                        )}
+                        data-tooltip-id={`phone-error-${dataRow.id}`}
+                        data-tooltip-content={dataRow?.errors?.phone?.message}
+                      >
+                        {dataRow?.errors?.phone?.severity}
+                        <ReactTooltip id={`phone-error-${dataRow.id}`} />
+                      </td>
                     </tr>
                   );
                 })}
@@ -323,17 +439,6 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
       </div>
       <div className="btnRow">
         <button
-          type="button"
-          className="btn btn-secondary"
-          style={{ marginRight: "10px" }}
-          disabled={!isModalActive}
-          onClick={onModalClick}
-        >
-          {(selectedRowData && (
-            <div>View ID {selectedRowData.id} Error Summary</div>
-          )) ?? <div>View Error Summary</div>}
-        </button>
-        <button
           onClick={handleExportExcel}
           type="button"
           className="btn btn-success"
@@ -341,6 +446,7 @@ const DataReviewTable: React.FC<IDataReviewTableProps> = () => {
           Export Excel
         </button>
       </div>
+      <ErrorModal dataRow={selectedRowData} />
     </div>
   );
 };
