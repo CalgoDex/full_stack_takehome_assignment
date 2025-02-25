@@ -69,4 +69,10 @@ body {
   padding: 20px;
 }
 
-
+.mainDataviewer{
+  position: absolute;
+  width: 100%;
+  left: 100%;
+  top: 100%;
+  transform: translate(-100%, -100%);
+}
